@@ -9,6 +9,10 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/opensource?schema=public"
+      DATABASE_URL_UNPOOLED: "postgresql://postgres:postgres@localhost:5432/opensource?schema=public"
+      JWT_SECRET: "ci-test-secret-key-at-least-32-chars-long"
 
     services:
       postgres:
@@ -41,16 +45,19 @@ jobs:
       - name: Run Prisma DB Push
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/opensource?schema=public"
+          DATABASE_URL_UNPOOLED: "postgresql://postgres:postgres@localhost:5432/opensource?schema=public"
         run: npx prisma db push
 
       - name: Run Automated Tests (Unit, Integration, E2E)
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/opensource?schema=public"
+          DATABASE_URL_UNPOOLED: "postgresql://postgres:postgres@localhost:5432/opensource?schema=public"
           JWT_SECRET: "ci-test-secret-key-at-least-32-chars-long"
         run: npm test
 
       - name: Build Next.js Production Bundle
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/opensource?schema=public"
+          DATABASE_URL_UNPOOLED: "postgresql://postgres:postgres@localhost:5432/opensource?schema=public"
           JWT_SECRET: "ci-test-secret-key-at-least-32-chars-long"
         run: npm run build
