@@ -18,17 +18,17 @@ export default function ForProductOwnersPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
       <div className="text-center max-w-3xl mx-auto space-y-4">
-        <Badge variant="default">Zero Upfront Ad Spend</Badge>
+        <Badge variant="default">Founder & Product Owner Infrastructure</Badge>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
-          Scale Global Sales With Verified Execution Teams
+          Build & Scale Your Business With Dedicated Execution Teams
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400 text-base sm:text-lg leading-relaxed">
-          OpenSource connects you with independent growth syndicates who market and sell your product in exchange for an agreed percentage of verified commercial results.
+          OpenSource connects entrepreneurs, startups, and product owners with skilled marketing, sales, engineering, and operational specialists. Organize execution in shared workspaces and align incentives through transparent milestone fees, commissions, or equity proposals.
         </p>
         <div className="pt-2">
           <Link href="/dashboard/products/new">
             <Button size="lg" variant="glow" className="gap-2">
-              List Your Product
+              Publish Your Project
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -38,21 +38,21 @@ export default function ForProductOwnersPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="p-6 space-y-3">
           <div className="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-            <DollarSign className="h-5 w-5" />
+            <Users className="h-5 w-5" />
           </div>
-          <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100">Performance-Only Capital</h3>
+          <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100">Multidisciplinary Talent</h3>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            Stop losing budget on unproven marketing agencies and rising ad costs. Pay commissions solely after customer transactions clear.
+            Recruit specialists across Marketing, Sales, Engineering, Design, and Operations without the overhead and rigidity of traditional agency retainers or full-time hires.
           </p>
         </Card>
 
         <Card className="p-6 space-y-3">
           <div className="h-10 w-10 rounded-xl bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold">
-            <Users className="h-5 w-5" />
+            <Layers className="h-5 w-5" />
           </div>
-          <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100">Multidisciplinary Syndicates</h3>
+          <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100">End-to-End Workspaces</h3>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            Gain complete teams—including outbound closers, technical writers, and growth hackers—without full-time hiring liabilities.
+            Organize everything in one place: task boards, time-zone scheduled meetings, confidential document sharing, business plan templates, sales CRM leads, and decision logs.
           </p>
         </Card>
 
@@ -60,9 +60,9 @@ export default function ForProductOwnersPage() {
           <div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
             <Lock className="h-5 w-5" />
           </div>
-          <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100">Tamper-Evident Terms</h3>
+          <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100">Flexible Compensation</h3>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            Every commercial agreement is versioned and secured with SHA256 checksums to safeguard all parties against unilateral changes.
+            Support voluntary contributions, fixed milestone payments, sales commissions, revenue shares, or proposed equity terms secured with SHA256 cryptographic checksums.
           </p>
         </Card>
       </div>

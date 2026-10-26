@@ -2,10 +2,12 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
 import { formatCents } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { InviteToProjectModal } from "@/components/projects/invite-to-project-modal";
 import {
   ShieldCheck,
   Star,
@@ -16,6 +18,7 @@ import {
   CheckCircle2,
   Mail,
   Award,
+  Layers,
 } from "lucide-react";
 
 interface PageProps {
@@ -24,6 +27,7 @@ interface PageProps {
 
 export default async function ProfessionalProfilePage({ params }: PageProps) {
   const { id } = await params;
+  const currentUser = await getCurrentUser();
 
   const user = await db.user.findUnique({
     where: { id },
@@ -46,6 +50,23 @@ export default async function ProfessionalProfilePage({ params }: PageProps) {
   if (!user) {
     notFound();
   }
+
+  // Fetch project contributions
+  const projectContributions = await db.projectMember.findMany({
+    where: { userId: user.id },
+    include: {
+      project: true,
+    },
+    orderBy: { joinedAt: "desc" },
+  });
+
+  // If viewing user is logged in, fetch their owned projects for the invite modal
+  const ownedProjects = currentUser
+    ? await db.product.findMany({
+        where: { ownerId: currentUser.id, status: "ACTIVE" },
+        select: { id: true, name: true, slug: true },
+      })
+    : [];
 
   const profile = user.profile;
   const verifiedSales = profile ? Number(profile.verifiedSalesCents) : 0;
@@ -105,8 +126,18 @@ export default async function ProfessionalProfilePage({ params }: PageProps) {
         </div>
 
         <div className="flex items-center gap-3">
+          {currentUser && currentUser.id !== user.id && (
+            <InviteToProjectModal
+              professional={{
+                id: user.id,
+                name: user.name,
+                avatarUrl: user.avatarUrl,
+              }}
+              ownedProjects={ownedProjects}
+            />
+          )}
           <Link href="/teams">
-            <Button variant="default">Invite to Team</Button>
+            <Button variant="outline" size="sm">Invite to Syndicate</Button>
           </Link>
         </div>
       </div>
@@ -156,6 +187,53 @@ export default async function ProfessionalProfilePage({ params }: PageProps) {
             <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-line">
               {profile?.bio || "No professional biography provided."}
             </p>
+          </Card>
+
+          {/* Active Business Projects */}
+          <Card className="p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <Layers className="h-4 w-4 text-indigo-500" />
+                Active Project Workspaces & Roles
+              </h3>
+              <Badge variant="secondary" className="text-xs">
+                {projectContributions.length} Projects
+              </Badge>
+            </div>
+            {projectContributions.length === 0 ? (
+              <p className="text-sm text-zinc-500">Currently exploring new project opportunities.</p>
+            ) : (
+              <div className="space-y-3">
+                {projectContributions.map((contribution) => (
+                  <div
+                    key={contribution.id}
+                    className="p-3.5 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  >
+                    <div>
+                      <Link
+                        href={`/products/${contribution.project.slug}`}
+                        className="font-bold text-sm text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 transition-colors"
+                      >
+                        {contribution.project.name}
+                      </Link>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="secondary" className="text-[10px]">
+                          {contribution.department}
+                        </Badge>
+                        <span className="text-xs text-zinc-500">
+                          Role: <strong>{contribution.role}</strong>
+                        </span>
+                      </div>
+                    </div>
+                    <Link href={`/products/${contribution.project.slug}`}>
+                      <Button size="sm" variant="outline" className="text-xs">
+                        View Project
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
 
           {/* Active Teams */}

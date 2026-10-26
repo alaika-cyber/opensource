@@ -17,6 +17,14 @@ import {
   LogOut,
   LayoutDashboard,
   ShieldAlert,
+  ListTodo,
+  Calendar,
+  MessageSquare,
+  Bell,
+  UserCheck,
+  PlusCircle,
+  FolderKanban,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -34,6 +42,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<UserSession | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -41,6 +50,15 @@ export function Navbar() {
       .then((data) => {
         if (data?.user) {
           setUser(data.user);
+          // fetch unread notifications
+          fetch("/api/notifications")
+            .then((r) => (r.ok ? r.json() : null))
+            .then((nData) => {
+              if (nData?.unreadCount !== undefined) {
+                setUnreadNotifications(nData.unreadCount);
+              }
+            })
+            .catch(() => {});
         } else {
           setUser(null);
         }
@@ -57,11 +75,10 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { label: "Products", href: "/products", icon: Layers },
-    { label: "Professionals", href: "/professionals", icon: Users },
+    { label: "Discover Projects", href: "/products", icon: FolderKanban },
+    { label: "Find Professionals", href: "/professionals", icon: Users },
     { label: "Teams", href: "/teams", icon: Compass },
     { label: "How It Works", href: "/how-it-works", icon: Briefcase },
-    { label: "Pricing", href: "/pricing", icon: null },
   ];
 
   const isCurrent = (href: string) => {
@@ -103,7 +120,7 @@ export function Navbar() {
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Theme Toggle */}
           <button
             onClick={() => setTheme(actualTheme === "dark" ? "light" : "dark")}
@@ -114,54 +131,144 @@ export function Navbar() {
           </button>
 
           {user ? (
-            <div className="relative">
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all text-sm font-medium"
+            <div className="flex items-center gap-2">
+              {/* Notifications Icon Button */}
+              <Link
+                href="/dashboard/notifications"
+                className="relative p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                title="Notifications"
               >
-                <div className="h-6 w-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">
-                  {user.name.charAt(0)}
-                </div>
-                <span className="max-w-[120px] truncate text-zinc-900 dark:text-zinc-100">
-                  {user.name}
-                </span>
-              </button>
+                <Bell className="h-4 w-4" />
+                {unreadNotifications > 0 && (
+                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
+                )}
+              </Link>
 
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-1.5 shadow-xl z-50 animate-in fade-in zoom-in-95">
-                  <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800">
-                    <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Signed in as</p>
-                    <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-                      {user.email}
-                    </p>
+              {/* User Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all text-sm font-medium"
+                >
+                  <div className="h-6 w-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">
+                    {user.name.charAt(0)}
                   </div>
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                  >
-                    <LayoutDashboard className="h-4 w-4 text-indigo-500" />
-                    Unified Dashboard
-                  </Link>
-                  {user.role === "ADMIN" && (
+                  <span className="max-w-[120px] truncate text-zinc-900 dark:text-zinc-100">
+                    {user.name}
+                  </span>
+                </button>
+
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-xl z-50 animate-in fade-in zoom-in-95">
+                    <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800 mb-1">
+                      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Signed in as</p>
+                      <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                        {user.email}
+                      </p>
+                    </div>
+
                     <Link
-                      href="/dashboard/admin"
+                      href="/dashboard"
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors"
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                      <ShieldAlert className="h-4 w-4" />
-                      Admin Console
+                      <LayoutDashboard className="h-3.5 w-3.5 text-indigo-500" />
+                      Personal Dashboard
                     </Link>
-                  )}
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Sign Out
-                  </button>
-                </div>
-              )}
+
+                    <Link
+                      href="/dashboard/owner"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <FolderKanban className="h-3.5 w-3.5 text-emerald-500" />
+                      My Projects & Founder Center
+                    </Link>
+
+                    <Link
+                      href="/dashboard/teams"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <Users className="h-3.5 w-3.5 text-amber-500" />
+                      Teams & Workspaces
+                    </Link>
+
+                    <Link
+                      href="/dashboard/tasks"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <ListTodo className="h-3.5 w-3.5 text-sky-500" />
+                      My Tasks & Execution
+                    </Link>
+
+                    <Link
+                      href="/dashboard/meetings"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <Calendar className="h-3.5 w-3.5 text-purple-500" />
+                      Meetings & Agendas
+                    </Link>
+
+                    <Link
+                      href="/dashboard/messages"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5 text-blue-500" />
+                      Messages & Discussions
+                    </Link>
+
+                    <Link
+                      href="/dashboard/notifications"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <Bell className="h-3.5 w-3.5 text-orange-500" />
+                        Notifications
+                      </span>
+                      {unreadNotifications > 0 && (
+                        <span className="bg-indigo-600 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">
+                          {unreadNotifications}
+                        </span>
+                      )}
+                    </Link>
+
+                    <Link
+                      href={`/professionals/${user.userId}`}
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <UserCheck className="h-3.5 w-3.5 text-zinc-500" />
+                      Profile & Settings
+                    </Link>
+
+                    {user.role === "ADMIN" && (
+                      <Link
+                        href="/dashboard/admin"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors"
+                      >
+                        <ShieldAlert className="h-3.5 w-3.5" />
+                        Admin Console
+                      </Link>
+                    )}
+
+                    <div className="pt-1.5 mt-1 border-t border-zinc-100 dark:border-zinc-800">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left"
+                      >
+                        <LogOut className="h-3.5 w-3.5" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="hidden sm:flex items-center gap-2">
@@ -202,7 +309,51 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          {!user && (
+          {user ? (
+            <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 space-y-1">
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
+                Personal Dashboard
+              </Link>
+              <Link
+                href="/dashboard/owner"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
+                My Projects & Founder Center
+              </Link>
+              <Link
+                href="/dashboard/tasks"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
+                Tasks & Execution
+              </Link>
+              <Link
+                href="/dashboard/meetings"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
+                Meetings
+              </Link>
+              <Link
+                href="/dashboard/notifications"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
+                Notifications ({unreadNotifications})
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
             <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 flex flex-col gap-2">
               <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="outline" className="w-full">
