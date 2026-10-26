@@ -31,3 +31,4 @@ Thank you for your interest in contributing to OpenSource.
 - **Financial Arithmetic:** Always use integer minor units (cents) and basis points (bps). Never introduce floating-point math in financial calculation paths.
 - **Strict Typing:** All TypeScript files must adhere to strict mode without `any` types where possible.
 - **Security:** Always enforce server-side authorization on all protected routes and mutations.
+hi
