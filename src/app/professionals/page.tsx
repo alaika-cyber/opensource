@@ -34,7 +34,17 @@ export default async function ProfessionalsPage({ searchParams }: PageProps) {
     },
   });
 
-  const skillsList = ["All", "Growth Strategy", "B2B Outbound", "Content Marketing", "Developer Relations", "SEO"];
+  const skillsList = [
+    "All",
+    "Full-Stack Development",
+    "UI/UX Design",
+    "Growth Strategy",
+    "B2B Sales",
+    "Content Marketing",
+    "Developer Relations",
+    "AI Engineering",
+    "Operations",
+  ];
 
   const filteredUsers = users.filter((u) => {
     if (skillFilter === "All") return true;
@@ -45,10 +55,10 @@ export default async function ProfessionalsPage({ searchParams }: PageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="max-w-3xl mb-8">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-50 tracking-tight">
-          Explore Growth Talent
+          Find Skilled Business & Technical Talent
         </h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
-          Connect with independent commercial growth specialists, strategists, and outbound closers with attributable track records.
+          Connect with independent developers, sales closers, marketers, designers, and business strategists to build, launch, and scale ventures collaboratively.
         </p>
       </div>
 

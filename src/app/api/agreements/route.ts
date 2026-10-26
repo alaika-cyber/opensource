@@ -15,13 +15,18 @@ export async function POST(req: NextRequest) {
     const {
       productId,
       teamId,
-      commissionPoolBps,
+      commissionPoolBps = 2000,
       commissionModel = CommissionModel.TEAM_POOL,
       allocationRules,
       termsText,
       attributionWindowDays = 60,
       recurringDurationMonths = 0,
       refundChargebackPolicy = "30-day proportional clawback on verified cancellations or disputes.",
+      compensationType = "COMMISSION",
+      fixedFeeCents = 0,
+      milestoneTerms,
+      equityProposalText,
+      equityDisclaimer = "Proposed equity terms are non-binding expressions of interest and do not constitute legal issuance of shares or securities.",
     } = body;
 
     // Verify product ownership
@@ -65,6 +70,11 @@ export async function POST(req: NextRequest) {
           termsText: termsText.trim(),
           checksum,
           status: AgreementStatus.PENDING_ACCEPTANCES,
+          compensationType,
+          fixedFeeCents: Number(fixedFeeCents) || 0,
+          milestoneTerms: milestoneTerms || null,
+          equityProposalText: equityProposalText || null,
+          equityDisclaimer,
         },
       });
 

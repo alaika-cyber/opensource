@@ -61,30 +61,30 @@ export default async function HomePage() {
         <div className="max-w-5xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/70 dark:bg-indigo-950/40 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>The Global Collaborative Commerce Platform</span>
+            <span>The Business Collaboration & Execution Platform</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 leading-[1.1]">
-            Great Products Deserve <br />
+            Build, Market, and Scale <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-500 to-indigo-400">
-              Great Teams.
+              Businesses Together.
             </span>
           </h1>
 
           <p className="max-w-3xl mx-auto text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-            Bring products to market with independent professionals who share your ambition. Build a team, grow sales, and earn through transparent commission agreements.
+            OpenSource connects entrepreneurs, product owners, startups, and skilled professionals. Form multidisciplinary teams, organize tasks and meetings, create business plans, coordinate execution, and align incentives through commissions, revenue sharing, milestone fees, or equity proposals.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link href="/products">
               <Button size="lg" variant="glow" className="gap-2 w-full sm:w-auto">
-                Explore Opportunities
+                Explore Business Opportunities
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link href="/dashboard/products/new">
               <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                List Your Product
+                Publish a Project
               </Button>
             </Link>
           </div>
@@ -92,16 +92,16 @@ export default async function HomePage() {
           {/* Social Proof & Trust Badges */}
           <div className="pt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs text-zinc-500 dark:text-zinc-400">
             <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-500" />
-              <span>Verified Sales Attribution</span>
+              <Layers className="h-4 w-4 text-emerald-500" />
+              <span>Full Project Workspaces</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Lock className="h-4 w-4 text-indigo-500" />
               <span>Tamper-Evident Agreements</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Award className="h-4 w-4 text-violet-500" />
-              <span>5% Disclosed Platform Fee</span>
+              <ShieldCheck className="h-4 w-4 text-violet-500" />
+              <span>Attributed Compensation & Ledgers</span>
             </div>
           </div>
         </div>
@@ -131,23 +131,23 @@ export default async function HomePage() {
               <div className="h-10 w-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2 font-bold">
                 1
               </div>
-              <CardTitle>For Product Owners</CardTitle>
+              <CardTitle>For Founders & Product Owners</CardTitle>
               <CardDescription>
-                Publish your product and specify commission pool terms. Review applications from specialized teams and unlock global distribution with zero upfront ad waste.
+                Publish physical products, SaaS, AI, startups, or growth campaigns. Recruit skilled marketing, sales, engineering, and design specialists to execute your vision.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-                <span>Versioned commission agreements</span>
+                <span>Full workspace: tasks, meetings & docs</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-                <span>Automated attribution & audit logs</span>
+                <span>Manage open positions & applications</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-                <span>Pay only upon verified commercial sales</span>
+                <span>Commissions, fixed fees, milestones, or equity</span>
               </div>
             </CardContent>
           </Card>
@@ -158,23 +158,23 @@ export default async function HomePage() {
               <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center text-violet-600 dark:text-violet-400 mb-2 font-bold">
                 2
               </div>
-              <CardTitle>For Independent Professionals</CardTitle>
+              <CardTitle>For Skilled Professionals</CardTitle>
               <CardDescription>
-                Discover vetted products or join high-performing syndicates. Build an attributable track record of verified revenue and earn recurring commissions.
+                Discover vetted business ventures and high-growth initiatives. Apply directly to open roles, join project workspaces, and build attributable outcomes.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-violet-500" />
-                <span>Verifiable sales outcomes portfolio</span>
+                <span>Verifiable execution & outcome portfolio</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-violet-500" />
-                <span>Direct team invites and discovery</span>
+                <span>Direct team invitations and workspace access</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-violet-500" />
-                <span>Transparent payouts in integer minor units</span>
+                <span>Transparent compensation in integer minor units</span>
               </div>
             </CardContent>
           </Card>
@@ -185,23 +185,23 @@ export default async function HomePage() {
               <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-2 font-bold">
                 3
               </div>
-              <CardTitle>For Collaborative Teams</CardTitle>
+              <CardTitle>For Teams & Organizations</CardTitle>
               <CardDescription>
-                Unite strategists, closers, and creators into dedicated commercial syndicates. Define internal revenue splits, manage tasks, and coordinate campaigns.
+                Coordinate departments (Engineering, Marketing, Sales, Operations). Run sprints, track milestone deliverables, maintain CRM leads, and log architectural decisions.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                <span>Pre-agreed internal revenue sharing</span>
+                <span>Integrated business plans & sales pipelines</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                <span>Collaborative workspaces and task boards</span>
+                <span>Time-zone aware meeting scheduling</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                <span>B2B deal registration conflict resolution</span>
+                <span>Tamper-evident agreements & SHA256 checksums</span>
               </div>
             </CardContent>
           </Card>
@@ -217,15 +217,15 @@ export default async function HomePage() {
                 Live Opportunities
               </Badge>
               <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-                Featured Product Opportunities
+                Featured Business Projects & Opportunities
               </h2>
               <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">
-                Real published products actively seeking marketing and sales syndicates.
+                Active business ventures seeking marketing, sales, development, and strategic execution partners.
               </p>
             </div>
             <Link href="/products">
               <Button variant="outline" className="gap-2">
-                View All Products
+                View All Projects
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -235,11 +235,13 @@ export default async function HomePage() {
             {featuredProducts.map((product) => (
               <Card key={product.id} className="flex flex-col justify-between hover:border-zinc-300 dark:hover:border-zinc-700 transition-all">
                 <CardHeader>
-                  <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
                     <Badge variant="secondary">{product.category}</Badge>
-                    <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
-                      {formatBps(product.commissionRateBps)} Commission Pool
-                    </span>
+                    {product.businessStage && (
+                      <Badge variant="outline" className="text-[10px] text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800">
+                        {product.businessStage}
+                      </Badge>
+                    )}
                   </div>
                   <CardTitle className="text-lg">
                     <Link href={`/products/${product.slug}`} className="hover:text-indigo-600 transition-colors">
@@ -249,16 +251,34 @@ export default async function HomePage() {
                   <CardDescription className="line-clamp-2">
                     {product.shortDesc}
                   </CardDescription>
+
+                  {product.openPositions && product.openPositions.length > 0 && (
+                    <div className="pt-2">
+                      <span className="text-[11px] font-semibold text-zinc-500 block mb-1">Open Positions:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {product.openPositions.slice(0, 2).map((pos, idx) => (
+                          <span key={idx} className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2 py-0.5 rounded">
+                            {pos}
+                          </span>
+                        ))}
+                        {product.openPositions.length > 2 && (
+                          <span className="text-[10px] text-zinc-400 self-center">
+                            +{product.openPositions.length - 2} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </CardHeader>
                 <CardFooter className="pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between">
                   <div>
-                    <span className="text-xs text-zinc-400 block">Price</span>
-                    <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
-                      {formatCents(product.priceCents, product.currency)}
+                    <span className="text-xs text-zinc-400 block">Founder</span>
+                    <span className="font-semibold text-xs text-zinc-900 dark:text-zinc-100">
+                      {product.owner.name}
                     </span>
                   </div>
                   <Link href={`/products/${product.slug}`}>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="default" className="text-xs">
                       View Opportunity
                     </Button>
                   </Link>
