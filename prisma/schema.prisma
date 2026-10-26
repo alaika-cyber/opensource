@@ -1,0 +1,804 @@
+// OpenSource Platform - Comprehensive Relational Schema
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum ProductType {
+  SAAS
+  AI_TOOLS
+  DEVELOPER_TOOLS
+  MOBILE_APP
+  DIGITAL_DOWNLOAD
+  COURSES
+  ECOMMERCE
+  CONSUMER_GOODS
+  BUSINESS_SERVICES
+}
+
+enum PricingModel {
+  ONE_TIME
+  SUBSCRIPTION_MONTHLY
+  SUBSCRIPTION_ANNUAL
+  USAGE_BASED
+}
+
+enum CommissionModel {
+  DIRECT_SALES
+  REFERRAL
+  TEAM_POOL
+  RECURRING
+  CUSTOM
+}
+
+enum ProductListingStatus {
+  DRAFT
+  UNDER_REVIEW
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum TeamVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum TeamStatus {
+  FORMING
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum TeamMemberRole {
+  LEADER
+  STRATEGIST
+  MARKETER
+  SALES_REP
+  CONTENT_CREATOR
+  TECHNICAL_ADVISOR
+}
+
+enum TeamMemberStatus {
+  ACTIVE
+  INVITED
+  PENDING_APPROVAL
+  REMOVED
+  LEFT
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+enum ApplicationStatus {
+  PENDING
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+}
+
+enum AgreementStatus {
+  DRAFT
+  PENDING_ACCEPTANCES
+  ACTIVE
+  AMENDED
+  TERMINATED
+  DISPUTED
+}
+
+enum AttributionMethod {
+  LAST_TOUCH_LINK
+  DISCOUNT_CODE
+  DEAL_REGISTRATION
+  HYBRID
+}
+
+enum DealRegistrationStatus {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CONVERTED
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  DISPUTED
+  CANCELLED
+}
+
+enum CommissionStatus {
+  PENDING
+  CONFIRMED
+  PAYABLE
+  PAID
+  REVERSED
+  DISPUTED
+}
+
+enum LedgerEntryType {
+  COMMISSION_EARNED
+  PLATFORM_FEE
+  PAYOUT_DISTRIBUTED
+  REFUND_REVERSAL
+  CHARGEBACK_ADJUSTMENT
+  SYSTEM_CREDIT
+}
+
+enum PayoutStatus {
+  SCHEDULED
+  PROCESSING
+  COMPLETED
+  FAILED
+  ON_HOLD
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+}
+
+model User {
+  id                String         @id @default(uuid())
+  email             String         @unique
+  passwordHash      String
+  name              String
+  role              Role           @default(USER)
+  status            AccountStatus  @default(ACTIVE)
+  emailVerified     Boolean        @default(false)
+  emailVerifyToken  String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  avatarUrl         String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  profile           ProfessionalProfile?
+  organizations     Organization[]
+  products          Product[]
+  teamsLed          Team[]         @relation("TeamLeader")
+  teamMemberships   TeamMember[]
+  sentInvitations   TeamInvitation[] @relation("Inviter")
+  applications      TeamApplication[]
+  opportunityApplications OpportunityApplication[]
+  referralLinks     ReferralLink[]
+  dealRegistrations DealRegistration[]
+  agreementAcceptances AgreementAcceptance[]
+  commissions       CommissionEntry[]
+  ledgerEntries     FinancialLedger[]
+  payouts           Payout[]
+  assignedTasks     TeamTask[]     @relation("TaskAssignee")
+  createdTasks      TeamTask[]     @relation("TaskCreator")
+  discussions       TeamDiscussion[]
+  comments          TeamDiscussionComment[]
+  reviewsGiven      Review[]       @relation("ReviewsGiven")
+  reviewsReceived   Review[]       @relation("ReviewsReceived")
+  notifications     Notification[]
+  auditLogs         AdminAuditLog[]
+  disputesRaised    Dispute[]      @relation("DisputesRaised")
+  disputesAgainst   Dispute[]      @relation("DisputesAgainst")
+  supportTickets    SupportTicket[]
+
+  @@index([email])
+}
+
+model ProfessionalProfile {
+  id                    String    @id @default(uuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline              String?
+  bio                   String?
+  skills                String[]  @default([])
+  specialties           String[]  @default([])
+  portfolioLinks        Json?
+  languages             String[]  @default(["English"])
+  timezone              String?   @default("UTC")
+  country               String?
+  availability          String?   @default("Part-time (10-20 hrs/wk)")
+  preferredContributionTypes String[] @default([])
+  verifiedSalesCents    BigInt    @default(0)
+  collaborationsCount   Int       @default(0)
+  averageRating         Float     @default(5.0)
+  isVerified            Boolean   @default(false)
+  updatedAt             DateTime  @updatedAt
+}
+
+model Organization {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  logoUrl     String?
+  website     String?
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id                      String               @id @default(uuid())
+  ownerId                 String
+  owner                   User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  organizationId          String?
+  organization            Organization?        @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  name                    String
+  slug                    String               @unique
+  shortDesc               String
+  description             String
+  category                String
+  tags                    String[]             @default([])
+  productType             ProductType          @default(SAAS)
+  images                  String[]             @default([])
+  websiteUrl              String?
+  targetAudience          String?
+  priceCents              Int
+  currency                String               @default("USD")
+  pricingModel            PricingModel         @default(ONE_TIME)
+  fulfillmentDetails      String?
+  refundPolicy            String?
+  commissionModel         CommissionModel      @default(DIRECT_SALES)
+  commissionRateBps       Int                  @default(2000) // 20.00%
+  attributionMethod       AttributionMethod    @default(LAST_TOUCH_LINK)
+  attributionWindowDays   Int                  @default(60)
+  recurringDurationMonths Int                  @default(0)
+  approvedMarketingAssets Json?
+  status                  ProductListingStatus @default(ACTIVE)
+  isVerified              Boolean              @default(false)
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  opportunities           Opportunity[]
+  agreements              CommercialAgreement[]
+  referralLinks           ReferralLink[]
+  orders                  Order[]
+  dealRegistrations       DealRegistration[]
+  reviews                 Review[]
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+}
+
+model Opportunity {
+  id            String                   @id @default(uuid())
+  productId     String
+  product       Product                  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  title         String
+  description   String
+  rolesNeeded   String[]                 @default([])
+  isOpen        Boolean                  @default(true)
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+
+  applications  OpportunityApplication[]
+
+  @@index([productId])
+}
+
+model OpportunityApplication {
+  id              String            @id @default(uuid())
+  opportunityId   String
+  opportunity     Opportunity       @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  applicantUserId String
+  applicantUser   User              @relation(fields: [applicantUserId], references: [id], onDelete: Cascade)
+  teamId          String?
+  team            Team?             @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  coverLetter     String
+  proposedStrategy String?
+  status          ApplicationStatus @default(PENDING)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([opportunityId])
+  @@index([applicantUserId])
+}
+
+model Team {
+  id              String            @id @default(uuid())
+  name            String
+  slug            String            @unique
+  logoUrl         String?
+  description     String
+  skills          String[]          @default([])
+  industryFocus   String?
+  leaderId        String
+  leader          User              @relation("TeamLeader", fields: [leaderId], references: [id], onDelete: Restrict)
+  visibility      TeamVisibility    @default(PUBLIC)
+  status          TeamStatus        @default(ACTIVE)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  members         TeamMember[]
+  invitations     TeamInvitation[]
+  applications    TeamApplication[]
+  opportunityApplications OpportunityApplication[]
+  agreements      CommercialAgreement[]
+  campaigns       Campaign[]
+  referralLinks   ReferralLink[]
+  tasks           TeamTask[]
+  discussions     TeamDiscussion[]
+  reviews         Review[]
+  dealRegistrations DealRegistration[]
+  commissions     CommissionEntry[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+model TeamMember {
+  id            String            @id @default(uuid())
+  teamId        String
+  team          Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role          TeamMemberRole    @default(SALES_REP)
+  allocationBps Int               @default(2000) // 20.00% of team commission pool
+  status        TeamMemberStatus  @default(ACTIVE)
+  joinedAt      DateTime          @default(now())
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+}
+
+model TeamInvitation {
+  id          String           @id @default(uuid())
+  teamId      String
+  team        Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  inviterId   String
+  inviter     User             @relation("Inviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  email       String
+  role        TeamMemberRole   @default(SALES_REP)
+  token       String           @unique
+  status      InvitationStatus @default(PENDING)
+  expiresAt   DateTime
+  createdAt   DateTime         @default(now())
+
+  @@index([teamId])
+  @@index([token])
+}
+
+model TeamApplication {
+  id            String            @id @default(uuid())
+  teamId        String
+  team          Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  proposedRole  TeamMemberRole    @default(SALES_REP)
+  message       String
+  status        ApplicationStatus @default(PENDING)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([teamId])
+  @@index([userId])
+}
+
+model CommercialAgreement {
+  id                    String            @id @default(uuid())
+  productId             String
+  product               Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  teamId                String?
+  team                  Team?             @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  agreementVersion      Int               @default(1)
+  commissionModel       CommissionModel   @default(TEAM_POOL)
+  commissionPoolBps     Int               @default(2000) // 20.00% gross of qualifying sales
+  allocationRulesJson   Json              // Array of { userId, memberRole, allocationBps }
+  refundChargebackPolicy String           @default("Reversed proportionally within 30 days of sale.")
+  recurringDurationMonths Int             @default(0)
+  attributionWindowDays Int               @default(60)
+  termsText             String
+  checksum              String            // SHA256 of agreement terms for immutability verification
+  status                AgreementStatus   @default(ACTIVE)
+  disputeProcedure      String            @default("Platform mediation followed by binding resolution.")
+  validFrom             DateTime          @default(now())
+  validUntil            DateTime?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  acceptances           AgreementAcceptance[]
+  campaigns             Campaign[]
+  commissions           CommissionEntry[]
+  disputes              Dispute[]
+
+  @@index([productId])
+  @@index([teamId])
+  @@index([status])
+}
+
+model AgreementAcceptance {
+  id            String              @id @default(uuid())
+  agreementId   String
+  agreement     CommercialAgreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checksum      String
+  ipAddress     String?
+  userAgent     String?
+  acceptedAt    DateTime            @default(now())
+
+  @@unique([agreementId, userId])
+  @@index([agreementId])
+  @@index([userId])
+}
+
+model Campaign {
+  id            String              @id @default(uuid())
+  agreementId   String
+  agreement     CommercialAgreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+  teamId        String?
+  team          Team?               @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  name          String
+  targetRevenueCents BigInt         @default(1000000) // $10,000
+  status        String              @default("ACTIVE")
+  startDate     DateTime            @default(now())
+  endDate       DateTime?
+  createdAt     DateTime            @default(now())
+
+  referralLinks ReferralLink[]
+
+  @@index([agreementId])
+  @@index([teamId])
+}
+
+model ReferralLink {
+  id            String            @id @default(uuid())
+  productId     String
+  product       Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId        String?
+  team          Team?             @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  campaignId    String?
+  campaign      Campaign?         @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  code          String            @unique
+  targetUrl     String
+  clickCount    Int               @default(0)
+  createdAt     DateTime          @default(now())
+
+  orders        Order[]
+
+  @@index([code])
+  @@index([userId])
+  @@index([productId])
+}
+
+model DealRegistration {
+  id                String                 @id @default(uuid())
+  productId         String
+  product           Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId            String?
+  team              Team?                  @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  leadName          String
+  leadCompany       String
+  leadEmail         String
+  dealEstimatedValueCents Int              @default(0)
+  status            DealRegistrationStatus @default(SUBMITTED)
+  notes             String?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  orders            Order[]
+
+  @@index([productId])
+  @@index([userId])
+  @@index([leadEmail])
+}
+
+model Order {
+  id                  String             @id @default(uuid())
+  orderNumber         String             @unique
+  productId           String
+  product             Product            @relation(fields: [productId], references: [id], onDelete: Restrict)
+  referralLinkId      String?
+  referralLink        ReferralLink?      @relation(fields: [referralLinkId], references: [id], onDelete: SetNull)
+  dealRegistrationId  String?
+  dealRegistration    DealRegistration?  @relation(fields: [dealRegistrationId], references: [id], onDelete: SetNull)
+  customerEmail       String
+  customerName        String?
+  grossAmountCents    Int
+  currency            String             @default("USD")
+  status              OrderStatus        @default(COMPLETED)
+  externalProviderRef String?            @unique
+  metadata            Json?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  commissions         CommissionEntry[]
+  attributionRecord   AttributionRecord?
+  disputes            Dispute[]
+
+  @@index([productId])
+  @@index([status])
+  @@index([orderNumber])
+}
+
+model AttributionRecord {
+  id              String            @id @default(uuid())
+  orderId         String            @unique
+  order           Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method          AttributionMethod @default(LAST_TOUCH_LINK)
+  referralCode    String?
+  verifiedAt      DateTime          @default(now())
+  evidenceData    Json?
+}
+
+model CommissionEntry {
+  id                    String              @id @default(uuid())
+  orderId               String
+  order                 Order               @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  agreementId           String
+  agreement             CommercialAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  userId                String
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  teamId                String?
+  team                  Team?               @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  calculationBasisCents Int
+  rateBps               Int                 // Total commission rate on sale
+  memberShareBps        Int                 // Member's share of pool
+  grossCommissionCents  Int                 // (Basis * rateBps * memberShareBps) / 100,000,000
+  platformFeeCents      Int                 // Configured platform fee (e.g., 5% of gross commission)
+  netCommissionCents    Int                 // grossCommissionCents - platformFeeCents
+  currency              String              @default("USD")
+  status                CommissionStatus    @default(CONFIRMED)
+  eligiblePayoutDate    DateTime
+  reversalReason        String?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  ledgerEntries         FinancialLedger[]
+
+  @@index([userId])
+  @@index([teamId])
+  @@index([orderId])
+  @@index([status])
+}
+
+model FinancialLedger {
+  id                String          @id @default(uuid())
+  entryType         LedgerEntryType
+  referenceId       String          // CommissionEntry.id, Order.id, or Payout.id
+  userId            String?
+  user              User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  commissionEntryId String?
+  commissionEntry   CommissionEntry? @relation(fields: [commissionEntryId], references: [id], onDelete: SetNull)
+  payoutId          String?
+  payout            Payout?         @relation(fields: [payoutId], references: [id], onDelete: SetNull)
+  amountCents       Int             // Positive for credits, negative for debits/payouts
+  currency          String          @default("USD")
+  balanceAfterCents Int
+  idempotencyKey    String          @unique
+  description       String
+  createdAt         DateTime        @default(now())
+
+  @@index([userId])
+  @@index([idempotencyKey])
+  @@index([entryType])
+}
+
+model Payout {
+  id              String          @id @default(uuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+  amountCents     Int
+  currency        String          @default("USD")
+  status          PayoutStatus    @default(SCHEDULED)
+  providerRef     String?
+  failureReason   String?
+  requestedAt     DateTime        @default(now())
+  processedAt     DateTime?
+
+  ledgerEntries   FinancialLedger[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TeamTask {
+  id          String        @id @default(uuid())
+  teamId      String
+  team        Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creatorId   String
+  creator     User          @relation("TaskCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  assigneeId  String?
+  assignee    User?         @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  priority    TaskPriority  @default(MEDIUM)
+  status      TaskStatus    @default(TODO)
+  dueDate     DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([teamId])
+  @@index([assigneeId])
+}
+
+model TeamDiscussion {
+  id          String                  @id @default(uuid())
+  teamId      String
+  team        Team                    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User                    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title       String
+  content     String
+  isPinned    Boolean                 @default(false)
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  comments    TeamDiscussionComment[]
+
+  @@index([teamId])
+}
+
+model TeamDiscussionComment {
+  id            String         @id @default(uuid())
+  discussionId  String
+  discussion    TeamDiscussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  authorId      String
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content       String
+  createdAt     DateTime       @default(now())
+
+  @@index([discussionId])
+}
+
+model Dispute {
+  id            String              @id @default(uuid())
+  orderId       String?
+  order         Order?              @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  agreementId   String?
+  agreement     CommercialAgreement? @relation(fields: [agreementId], references: [id], onDelete: SetNull)
+  reporterId    String
+  reporter      User                @relation("DisputesRaised", fields: [reporterId], references: [id], onDelete: Restrict)
+  respondentId  String?
+  respondent    User?               @relation("DisputesAgainst", fields: [respondentId], references: [id], onDelete: SetNull)
+  reason        String
+  description   String
+  evidence      Json?
+  status        DisputeStatus       @default(OPEN)
+  resolution    String?
+  resolvedAt    DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([status])
+}
+
+model Review {
+  id                        String    @id @default(uuid())
+  authorId                  String
+  author                    User      @relation("ReviewsGiven", fields: [authorId], references: [id], onDelete: Cascade)
+  targetUserId              String?
+  targetUser                User?     @relation("ReviewsReceived", fields: [targetUserId], references: [id], onDelete: SetNull)
+  targetTeamId              String?
+  targetTeam                Team?     @relation(fields: [targetTeamId], references: [id], onDelete: SetNull)
+  productId                 String?
+  product                   Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  collaborationAgreementId String?
+  rating                    Int       @default(5)
+  title                     String?
+  comment                   String
+  isVerifiedCollaboration   Boolean   @default(true)
+  createdAt                 DateTime  @default(now())
+
+  @@index([targetUserId])
+  @@index([targetTeamId])
+  @@index([productId])
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  message     String
+  type        String    // INVITATION, APPLICATION, SALE, COMMISSION, PAYOUT, DISPUTE, SECURITY
+  linkUrl     String?
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+model AdminAuditLog {
+  id            String    @id @default(uuid())
+  adminId       String
+  admin         User      @relation(fields: [adminId], references: [id], onDelete: Restrict)
+  action        String
+  targetEntity  String
+  targetId      String?
+  detailsJson   Json?
+  ipAddress     String?
+  createdAt     DateTime  @default(now())
+
+  @@index([adminId])
+  @@index([targetEntity])
+}
+
+model PlatformSetting {
+  id          String    @id @default(uuid())
+  key         String    @unique
+  valueJson   Json
+  description String?
+  updatedAt   DateTime  @updatedAt
+
+  @@index([key])
+}
+
+model WebhookEvent {
+  id            String        @id @default(uuid())
+  provider      String
+  eventId       String        @unique
+  eventType     String
+  payload       Json
+  status        WebhookStatus @default(RECEIVED)
+  errorMessage  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([provider, eventId])
+  @@index([status])
+}
+
+model SupportTicket {
+  id          String        @id @default(uuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject     String
+  message     String
+  status      String        @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  priority    String        @default("MEDIUM")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
